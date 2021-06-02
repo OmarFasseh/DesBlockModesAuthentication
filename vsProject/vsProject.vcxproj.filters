@@ -15,18 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\des.cpp">
+    <ClCompile Include="..\src\des.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\DesMain.cpp">
+    <ClCompile Include="..\src\DesMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\des.h">
+    <ClInclude Include="..\src\des.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\desTables.h">
+    <ClInclude Include="..\src\desTables.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
