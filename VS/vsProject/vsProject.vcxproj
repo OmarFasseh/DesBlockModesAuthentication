@@ -139,12 +139,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Src\des.cpp" />
-    <ClCompile Include="Src\DesMain.cpp" />
+    <ClCompile Include="..\..\src\des.cpp" />
+    <ClCompile Include="..\..\src\DesMain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Src\des.h" />
-    <ClInclude Include="Src\desTables.h" />
+    <ClInclude Include="..\..\src\des.h" />
+    <ClInclude Include="..\..\src\desTables.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
