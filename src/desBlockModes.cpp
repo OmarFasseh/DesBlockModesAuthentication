@@ -113,7 +113,7 @@ string CBC_E(string s, const string& key, const string& IV)
     blockPadding(s);
     s = string2Hex(s);
     Pn = s.substr(0, 16);
-    tmp = bin2Hex(xorS(hex2Bin(Pn), hex2Bin(string2Hex(IV))));
+    tmp = bin2Hex(xorS(hex2Bin(Pn), hex2Bin(IV)));
     Cn = (desEnc(tmp, key));
     ans += Cn;
     for (int i = 16; i < s.size(); i += 16)
@@ -133,7 +133,7 @@ string CBC_D(string s, const string& key, const string& IV)
     Cn = s.substr(0, 16);
     int cnsize = Cn.size();
     tmp = desDec(Cn, key);
-    ans += bin2Hex(xorS(hex2Bin(tmp), hex2Bin(string2Hex(IV))));
+    ans += bin2Hex(xorS(hex2Bin(tmp), hex2Bin(IV)));
     prev = Cn;
     for (int i = 16; i < s.size(); i += 16)
     {
@@ -149,8 +149,9 @@ string CBC_D(string s, const string& key, const string& IV)
 //string input, hex key ,hex counter
 string CTR_ED(string s, const string& key, string counter)
 {
+    
     string temp, Pn, Cn, ans = "";
-    blockPadding(s);
+    //blockPadding(s);
     s = string2Hex(s);
     long long x;
     std::stringstream ss;
@@ -178,7 +179,7 @@ string CFB_E(string s, const string& key, const string& IV)
     string temp, Pn, Cn, ans = "";
     blockPadding(s);
     s = string2Hex(s);
-    string shiftReg = string2Hex(IV);
+    string shiftReg = IV;
 
     temp = desEnc(shiftReg, key);
     Pn = s.substr(0, sBits / 4);
@@ -201,7 +202,7 @@ string CFB_D(string s, const string& key, const string& IV)
     int sBits = CFB_S; //multiples of 4
     string temp, Pn, Cn, ans = "";
     s = string2Hex(s);
-    string shiftReg = string2Hex(IV);
+    string shiftReg = IV;
 
     temp = desEnc(shiftReg, key);
     Cn = s.substr(0, sBits / 4);

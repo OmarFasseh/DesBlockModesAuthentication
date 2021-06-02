@@ -49,8 +49,8 @@ int __cdecl main(void)
         {
             string message(recvbuf);
             message = message.substr(0, iResult);
-
-            cout << "recived: " << decrypt(message) << "\n";
+            message =decrypt(message) ;
+            cout << "decrypted: " <<message<< "\n\n";
         }
         else if (iResult == 0)
             printf("Connection closing...\n");
@@ -75,6 +75,7 @@ int __cdecl main(void)
 
 string decrypt(string s)
 {
+    cout <<"message before decryption"<< s<<endl;
     int mode;
     string key, IV, counter;
     std::ifstream fs("config.txt");

@@ -3,6 +3,8 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <time.h>
+#include <sstream>
 #include "desBlockModes.h"
 
 //network
@@ -32,10 +34,34 @@ int cleanUp(SOCKET &ConnectSocket);
 
 int __cdecl main()
 {
+    srand((unsigned)time(NULL));
     int mode;
-    string key = "133457799BBCDFF1";
-    string IV = "gaberzzz";
-    string counter = "1478523691abcdef";
+    // string key = "133457799BBCDFF1";
+    // string IV = "133457799BBCDFF1";
+    // string counter = "1478523691abcdef";
+    string key = "";
+    string IV = "";
+    string counter = "";
+    std::stringstream stream;
+    unsigned int x;
+    for (int i = 0; i < 16; i++)
+    {
+        x = rand() % 16;
+        stream.str(std::string());
+        stream << std::hex << x;
+        key += stream.str();
+
+        x = rand() % 16;
+        stream.str(std::string());
+        stream << std::hex << x;
+        IV += stream.str();
+
+        x = rand() % 16;
+        stream.str(std::string());
+        stream << std::hex << x;
+        counter += stream.str();
+    }
+    cout << "Generated key = " << key << "\nGenerated IV=" << IV << "\nGenerated Counter=" << counter << endl;
 
     writeConfig(mode, key, IV, counter);
 
@@ -55,6 +81,7 @@ int __cdecl main()
         if (message.size())
         {
             message = encrypt(mode, message, key, IV, counter);
+            cout <<"message after encryption"<< message<<endl<<endl;
             iResult = send(ConnectSocket, message.c_str(), message.size(), 0);
             if (iResult == SOCKET_ERROR)
             {

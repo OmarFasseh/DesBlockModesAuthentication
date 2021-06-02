@@ -7,7 +7,7 @@ int mainnn()
     //string message = "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF012345678";
     string key = "133457799BBCDFF1";
     string test = "HelloworldHelloworld";
-    string IV = "gaberzzz";
+    string IV = "133457799BBCDFF1";
     string counter = "1478523691abcdef";
 
     cout << test << endl;
