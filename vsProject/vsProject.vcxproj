@@ -20,10 +20,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\des.cpp" />
+    <ClCompile Include="..\src\desBlockModes.cpp" />
     <ClCompile Include="..\src\DesMain.cpp" />
+    <ClCompile Include="..\src\receiver.cpp" />
+    <ClCompile Include="..\src\sender.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\des.h" />
+    <ClInclude Include="..\src\desBlockModes.h" />
     <ClInclude Include="..\src\desTables.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

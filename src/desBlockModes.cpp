@@ -11,6 +11,8 @@
 #define CFB_S 8 //multiples of 4
 using std::string;
 
+
+
 string string2Hex(const string& input)
 {
     static const char hex_digits[] = "0123456789ABCDEF";
@@ -145,7 +147,7 @@ string CBC_D(string s, const string& key, const string& IV)
 }
 
 //string input, hex key ,hex counter
-string CTR(string s, const string& key, string counter)
+string CTR_ED(string s, const string& key, string counter)
 {
     string temp, Pn, Cn, ans = "";
     blockPadding(s);

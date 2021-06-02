@@ -21,12 +21,24 @@
     <ClCompile Include="..\src\DesMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\desBlockModes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\receiver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sender.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\des.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\desTables.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\desBlockModes.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

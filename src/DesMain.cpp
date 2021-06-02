@@ -2,7 +2,7 @@
 #include "desBlockModes.h"
 using std::cout;
 using std::endl;
-int main()
+int mainnn()
 {
     //string message = "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF012345678";
     string key = "133457799BBCDFF1";

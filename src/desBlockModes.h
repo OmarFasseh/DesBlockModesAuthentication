@@ -4,6 +4,14 @@
 #include <string>
 using std::string;
 
+enum modes
+{
+    ECB = 1,
+    CBC,
+    CFB,
+    CTR
+};
+
 string string2Hex(const string& input);
 string hex2String(const string& h);
 void blockPadding(string& s);
@@ -26,7 +34,7 @@ string CBC_E(string s, const string& key, const string& IV);
 string CBC_D(string s, const string& key, const string& IV);
 
 //string input, hex key ,hex counter
-string CTR(string s, const string& key, string counter);
+string CTR_ED(string s, const string& key, string counter);
 
 //string input, hex key, string IV
 string CFB_E(string s, const string& key, const string& IV);
