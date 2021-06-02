@@ -1,0 +1,2 @@
+E:\College\Year 21 Spring\Security\Project\VS\vsProject\Debug\vsProject.exe
+E:\College\Year 21 Spring\Security\Project\VS\vsProject\Debug\vsProject.pdb

@@ -1,0 +1,246 @@
+#include <iostream>
+#include <string>
+#include <unordered_map>
+#include <vector>
+#include <bitset>
+#include <algorithm>
+#include <time.h>
+#include <chrono>
+#include <sstream>
+
+#include "des.h"
+
+#define PADCHAR " "
+#define CFB_S 8 //multiples of 4
+using namespace std;
+using namespace std::chrono;
+
+string desEnc(string message, string key)
+{
+    vector<string> roundskeys;
+    roundskeys = desKeys(key);
+    return des(message, roundskeys);
+}
+
+string desDec(string message, string key)
+{
+    vector<string> roundskeys;
+    roundskeys = desKeys(key);
+    reverse(roundskeys.begin(), roundskeys.end());
+    return des(message, roundskeys);
+}
+
+string string2Hex(const string& input)
+{
+    static const char hex_digits[] = "0123456789ABCDEF";
+    string output;
+    output.reserve(input.length() * 2);
+    for (unsigned char c : input)
+    {
+        output.push_back(hex_digits[c >> 4]);
+        output.push_back(hex_digits[c & 15]);
+    }
+    return output;
+}
+
+string hex2String(const string& s)
+{
+    string tmp;
+    string ans = "";
+    for (int i = 0; i < s.size(); i += 2)
+    {
+        tmp = s.substr(i, 2);
+        ans += (char)stoul(tmp, nullptr, 16);
+    }
+    return ans;
+}
+void blockPadding(string& s)
+{
+    int rem = s.size() % 8;
+    if (rem)
+    {
+        for (int i = rem; i < 8; i++)
+        {
+            s += PADCHAR;
+        }
+    }
+}
+
+string ECB_E(string s, const string& key)
+{
+
+    blockPadding(s);
+    s = string2Hex(s);
+    string tmp, ans = "";
+    for (int i = 0; i < s.size(); i += 16)
+    {
+        tmp = s.substr(i, 16);
+        ans += (desEnc(tmp, key));
+    }
+    return hex2String(ans);
+}
+
+string ECB_D(string s, const string& key)
+{
+    string tmp, ans = "";
+    s = string2Hex(s);
+    for (int i = 0; i < s.size(); i += 16)
+    {
+        tmp = s.substr(i, 16);
+        ans += desDec((tmp), key);
+    }
+    return hex2String(ans);
+}
+
+string CBC_E(string s, const string& key, const string& IV)
+{
+    string Cn, Pn, tmp, ans = "";
+    blockPadding(s);
+    s = string2Hex(s);
+    Pn = s.substr(0, 16);
+    tmp = bin2Hex(xorS(hex2Bin(Pn), hex2Bin(string2Hex(IV))));
+    Cn = (desEnc(tmp, key));
+    ans += Cn;
+    for (int i = 16; i < s.size(); i += 16)
+    {
+        Pn = s.substr(i, 16);
+        string tmp = bin2Hex(xorS(hex2Bin(Pn), hex2Bin(Cn)));
+        Cn = (desEnc(tmp, key));
+        ans += Cn;
+    }
+    return hex2String(ans);
+}
+
+string CBC_D(string s, const string& key, const string& IV)
+{
+    string prev, tmp, Cn, ans = "";
+    s = string2Hex(s);
+    Cn = s.substr(0, 16);
+    int cnsize = Cn.size();
+    tmp = desDec(Cn, key);
+    ans += bin2Hex(xorS(hex2Bin(tmp), hex2Bin(string2Hex(IV))));
+    prev = Cn;
+    for (int i = 16; i < s.size(); i += 16)
+    {
+        Cn = s.substr(i, 16);
+        cnsize = Cn.size();
+        tmp = desDec(Cn, key);
+        ans += bin2Hex(xorS(hex2Bin(tmp), hex2Bin(prev)));
+        prev = Cn;
+    }
+    return hex2String(ans);
+}
+
+string CTR(string s, const string& key, string counter)
+{
+    string temp, Pn, Cn, ans = "";
+    blockPadding(s);
+    s = string2Hex(s);
+    long long x;
+    std::stringstream ss;
+    ss << std::hex << counter;
+    ss >> x;
+    for (int i = 0; i < s.size(); i += 16)
+    {
+        temp = desEnc(counter, key);
+        Pn = s.substr(i, 16);
+        Cn = bin2Hex(xorS(hex2Bin(Pn), hex2Bin(temp)));
+        ans += Cn;
+        x += 1;
+        std::stringstream stream;
+        stream << std::hex << x;
+        counter = stream.str();
+    }
+    return hex2String(ans);
+}
+
+string shitfHexNbits(const string& hex, int n, const string& s2)
+{
+    string bin = hex2Bin(hex);
+    string bin2 = hex2Bin(s2);
+    string ans = bin.substr(n, bin.size() - n);
+    for (int j = 0; j < n; j++)
+    {
+        ans += bin2[j];
+    }
+    ans = bin2Hex(ans);
+    return ans;
+}
+
+string CFB_E(string s, const string& key, const string& IV)
+{
+    int sBits = CFB_S; //multiples of 4
+    string temp, Pn, Cn, ans = "";
+    blockPadding(s);
+    s = string2Hex(s);
+    string shiftReg = string2Hex(IV);
+
+    temp = desEnc(shiftReg, key);
+    Pn = s.substr(0, sBits / 4);
+    Cn = bin2Hex(xorS(hex2Bin(temp.substr(0, sBits / 4)), hex2Bin(Pn)));
+    ans += Cn;
+    for (int i = sBits / 4; i < s.size(); i += sBits / 4)
+    {
+        shiftReg = shitfHexNbits(shiftReg, sBits, Cn);
+        temp = desEnc(shiftReg, key);
+        Pn = s.substr(i, sBits / 4);
+        Cn = bin2Hex(xorS(hex2Bin(temp.substr(0, sBits / 4)), hex2Bin(Pn)));
+        ans += Cn;
+    }
+    return hex2String(ans);
+}
+
+string CFB_D(string s, const string& key, const string& IV)
+{
+    int sBits = CFB_S; //multiples of 4
+    string temp, Pn, Cn, ans = "";
+    s = string2Hex(s);
+    string shiftReg = string2Hex(IV);
+
+    temp = desEnc(shiftReg, key);
+    Cn = s.substr(0, sBits / 4);
+    Pn = bin2Hex(xorS(hex2Bin(temp.substr(0, sBits / 4)), hex2Bin(Cn)));
+    ans += Pn;
+    for (int i = sBits / 4; i < s.size(); i += sBits / 4)
+    {
+        shiftReg = shitfHexNbits(shiftReg, sBits, Cn);
+        temp = desEnc(shiftReg, key);
+        Cn = s.substr(i, sBits / 4);
+        Pn = bin2Hex(xorS(hex2Bin(temp.substr(0, sBits / 4)), hex2Bin(Cn)));
+        ans += Pn;
+    }
+    return hex2String(ans);
+}
+int main()
+{
+    //string message = "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF012345678";
+    string key = "133457799BBCDFF1";
+    string test = "HelloworldHelloworld";
+    string IV = "gaberzzz";
+    string counter = "1478523691abcdef";
+
+    cout << test << endl;
+    cout << string2Hex(IV) << endl;
+
+    cout << "message is " << test << " key is " << key << endl;
+    string cipher = CFB_E(test, key, IV);
+    cout << "cipher is:" << cipher  << " and hex: " << string2Hex(cipher)<< endl;
+    cout << "original ans is:" << CFB_D(cipher, key, IV) << endl;
+
+    // string cases[] = {"0123456789ABCDEF", "02468aceeca86420", "6D6573736167652E"};
+    // string keys[] = {"133457799BBCDFF1", "0f1571c947d9e859", "38627974656B6579"};
+
+    // for (int i = 0; i < 3; i++)
+    // {
+
+    //     vector<string> keysV = desKeys(keys[i]);
+    //     string outputS = desEnc(cases[i], keys[i]);
+
+    //     cout << "Message: " << cases[i] << " Key: " << keys[i] << " des: " << outputS << endl;
+
+    //     reverse(keysV.begin(), keysV.end());
+    //     cout << "after decryption: " << desDec(outputS, keys[i]) << endl << endl;
+    // }
+
+    return 0;
+}
