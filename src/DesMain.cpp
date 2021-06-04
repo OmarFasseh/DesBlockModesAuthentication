@@ -1,5 +1,6 @@
 #include <iostream>
 #include "desBlockModes.h"
+#include "des.h"
 using std::cout;
 using std::endl;
 int mainnn()

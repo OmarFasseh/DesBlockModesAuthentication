@@ -5,7 +5,40 @@
 #include <bitset>
 #include <algorithm>
 #include "desTables.h"
+#include <iostream>
 using namespace std;
+
+string string2Hex(const string &input)
+{
+    static const char hex_digits[] = "0123456789ABCDEF";
+    string output;
+    output.reserve(input.length() * 2);
+    for (unsigned char c : input)
+    {
+        output.push_back(hex_digits[c >> 4]);
+        output.push_back(hex_digits[c & 15]);
+    }
+    return output;
+}
+string hex2String(const string &h)
+{
+    string tmp;
+    string ans = "";
+    try
+    {
+        for (int i = 0; i < h.size(); i += 2)
+        {
+            tmp = h.substr(i, 2);
+            ans += (char)stoul(tmp, nullptr, 16);
+        }
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << " error key not hex value." <<  '\n';
+    }
+    return ans;
+}
+
 string hex2Bin(string hex)
 {
     string bin = "";
@@ -100,9 +133,9 @@ string xorS(string s1, string s2)
 {
     //assume same size
     string ans = "";
-    int n =min(s1.size(),s2.size());
-    
-    for (int i = 0; i <n; i++)
+    int n = min(s1.size(), s2.size());
+
+    for (int i = 0; i < n; i++)
     {
         if (s1[i] == s2[i])
             ans += "0";

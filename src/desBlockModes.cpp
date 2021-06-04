@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 
 #include <algorithm>
@@ -13,29 +12,6 @@ using std::string;
 
 
 
-string string2Hex(const string& input)
-{
-    static const char hex_digits[] = "0123456789ABCDEF";
-    string output;
-    output.reserve(input.length() * 2);
-    for (unsigned char c : input)
-    {
-        output.push_back(hex_digits[c >> 4]);
-        output.push_back(hex_digits[c & 15]);
-    }
-    return output;
-}
-string hex2String(const string& h)
-{
-    string tmp;
-    string ans = "";
-    for (int i = 0; i < h.size(); i += 2)
-    {
-        tmp = h.substr(i, 2);
-        ans += (char)stoul(tmp, nullptr, 16);
-    }
-    return ans;
-}
 void blockPadding(string& s)
 {
     int rem = s.size() % 8;

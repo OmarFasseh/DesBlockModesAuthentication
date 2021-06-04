@@ -1,2 +1,2 @@
-g++ src/sender.cpp src/DesMain.cpp src/des.cpp src/desBlockModes.cpp -o sender -lws2_32
+g++ src/sender.cpp src/des.cpp src/desBlockModes.cpp src/sha1.cpp -o sender -lws2_32
 sender.exe

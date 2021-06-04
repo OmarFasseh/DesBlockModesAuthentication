@@ -8,6 +8,8 @@
 
 using namespace std;
 
+string string2Hex(const string& input);
+string hex2String(const string& h);
 string hex2Bin(string hex);
 string permute(string key, int table[], int size);
 vector<string> generate16Key(string key);

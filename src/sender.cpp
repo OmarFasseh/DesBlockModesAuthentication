@@ -6,6 +6,7 @@
 #include <time.h>
 #include <sstream>
 #include "desBlockModes.h"
+#include "hmac.h"
 
 //network
 #include <windows.h>
@@ -27,7 +28,7 @@ using std::cout;
 using std::endl;
 using std::string;
 
-void writeConfig(int &mode, string &key, string &IV, string &counter);
+void writeConfig(int &mode, string &key, string &IV, string &counter, string &hmacKey);
 string encrypt(int mode, string s, const string &key, const string &IV, const string &counter);
 int initSockets(SOCKET &ConnectSocket);
 int cleanUp(SOCKET &ConnectSocket);
@@ -40,6 +41,7 @@ int __cdecl main()
     // string IV = "133457799BBCDFF1";
     // string counter = "1478523691abcdef";
     string key = "";
+    string hmacKey = "";
     string IV = "";
     string counter = "";
     std::stringstream stream;
@@ -61,9 +63,18 @@ int __cdecl main()
         stream << std::hex << x;
         counter += stream.str();
     }
-    cout << "Generated key = " << key << "\nGenerated IV=" << IV << "\nGenerated Counter=" << counter << endl;
+    int keySize = rand() % 64;
+    for (int i = 0; i < keySize; i++)
+    {
+        x = rand() % 16;
+        stream.str(std::string());
+        stream << std::hex << x;
+        hmacKey += stream.str();
+    }
 
-    writeConfig(mode, key, IV, counter);
+    cout << "Generated key = " << key << "\nGenerated IV=" << IV << "\nGenerated Counter=" << counter << "\nhmacKey=" << hmacKey << endl;
+
+    writeConfig(mode, key, IV, counter, hmacKey);
 
     SOCKET ConnectSocket = INVALID_SOCKET;
     int iResult = initSockets(ConnectSocket);
@@ -73,15 +84,20 @@ int __cdecl main()
     }
 
     char sendbuf[DEFAULT_BUFLEN];
-    cout << "Enter messages to send, and \"exit\" to end" << endl;
+    cout << "\nEnter messages to send, and \"exit\" to end" << endl;
     string message;
+    string hmacHex;
     getline(cin, message);
     while (message != "exit")
     {
         if (message.size())
         {
             message = encrypt(mode, message, key, IV, counter);
-            cout <<"message after encryption"<< message<<endl<<endl;
+            hmacHex = hmac(message, hmacKey); //TODO: might want to use another key
+            cout << "message after encryption" << message << endl
+                 << "HMAC-SHA1 after encrpytion: " << hmacHex << endl
+                 << endl;
+            message = message + hmacHex;
             iResult = send(ConnectSocket, message.c_str(), message.size(), 0);
             if (iResult == SOCKET_ERROR)
             {
@@ -120,7 +136,7 @@ string encrypt(int mode, string s, const string &key, const string &IV, const st
     return "";
 }
 
-void writeConfig(int &mode, string &key, string &IV, string &counter)
+void writeConfig(int &mode, string &key, string &IV, string &counter, string &hmacKey)
 {
     cout << "Choose mode: (1~4) \n1) Electronic Codebook (ECB)"
          << "\n2) Cipher Block Chaining (CBC)"
@@ -135,7 +151,9 @@ void writeConfig(int &mode, string &key, string &IV, string &counter)
         cin >> mode;
     }
     std::ofstream fs("config.txt");
-    fs << mode << " " << key << " " << IV << " " << counter;
+    fs << mode << " " << key << " " << IV << " " << counter << " " << hmacKey;
+    fs << "\nmode    key             IV             Counter             hmac";
+
     fs.close();
 }
 

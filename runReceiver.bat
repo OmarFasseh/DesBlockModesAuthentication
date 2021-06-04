@@ -1,2 +1,2 @@
-g++ src/receiver.cpp src/DesMain.cpp src/des.cpp src/desBlockModes.cpp -o receiver -lws2_32
+g++ src/receiver.cpp src/des.cpp src/desBlockModes.cpp src/sha1.cpp -o receiver -lws2_32
 receiver.exe

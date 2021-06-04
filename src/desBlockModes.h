@@ -12,8 +12,6 @@ enum modes
     CTR
 };
 
-string string2Hex(const string& input);
-string hex2String(const string& h);
 void blockPadding(string& s);
 //shifts string n bits left and adds s2 from the right
 string shitfHexNbits(const string& hex, int n, const string& s2);

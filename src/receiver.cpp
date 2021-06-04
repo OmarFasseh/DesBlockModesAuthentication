@@ -6,6 +6,7 @@
 #include <string>
 #include <fstream>
 #include "desBlockModes.h"
+#include "hmac.h"
 
 //network
 #include <windows.h>
@@ -25,20 +26,20 @@ using std::cin;
 using std::cout;
 using std::endl;
 using std::string;
-string decrypt(string s);
+string decrypt(string s,const int &mode, const string &key, const string &IV, const string &counter);
 int initSockets(SOCKET &ClientSocket);
 int cleanUp(SOCKET &ClientSocket);
 
 int __cdecl main(void)
 {
-    cout <<"Please connect the sender and choose mode.\n";
+    cout << "Please connect the sender and choose mode.\n";
     SOCKET ClientSocket = INVALID_SOCKET;
     int iResult = initSockets(ClientSocket);
     if (iResult)
     {
         return iResult;
     }
-    cout << "receiver started.\n";
+    cout << "receiver started.\n\n";
     char recvbuf[DEFAULT_BUFLEN];
     int recvbuflen = DEFAULT_BUFLEN;
     // Receive until the peer shuts down the connection
@@ -48,9 +49,28 @@ int __cdecl main(void)
         if (iResult > 0)
         {
             string message(recvbuf);
-            message = message.substr(0, iResult);
-            message =decrypt(message) ;
-            cout << "decrypted: " <<message<< "\n\n";
+            string hmacHex = message.substr(iResult - 40, 40);
+            message = message.substr(0, iResult - 40);
+            cout << "received message " << message << "\nWith hmac =" << hmacHex << endl;
+
+            //read file each time (so that file can be changed during runtime)
+            int mode;
+            string key, IV, counter , hmacKey;
+            std::ifstream fs("config.txt");
+            fs >> mode >> key >> IV >> counter >>hmacKey;
+            fs.close();
+
+            string hmacHex2 = hmac(message, hmacKey);
+            if (hmacHex == hmacHex2)
+            {
+                cout << "Correct Hmac! Cipher text is correct" << endl;
+            }
+            else
+            {
+                cout << "Wrong Hmac!, calculated hmac= " << hmacHex2<< endl;
+            }
+            message = decrypt(message, mode, key, IV, counter);
+                cout << "decrypted message: " << message << "\n\n";
         }
         else if (iResult == 0)
             printf("Connection closing...\n");
@@ -73,15 +93,8 @@ int __cdecl main(void)
     return 0;
 }
 
-string decrypt(string s)
+string decrypt(string s, const int &mode, const string &key, const string &IV, const string &counter)
 {
-    cout <<"message before decryption"<< s<<endl;
-    int mode;
-    string key, IV, counter;
-    std::ifstream fs("config.txt");
-    fs>>mode >> key >> IV >> counter;
-    fs.close();
-
     switch (mode)
     {
     case ECB:
