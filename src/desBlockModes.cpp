@@ -7,7 +7,7 @@
 #include "des.h"
 
 #define PADCHAR " "
-#define CFB_S 8 //multiples of 4
+#define CFB_S 8 //must be a multiple of 4
 using std::string;
 
 
@@ -57,7 +57,6 @@ string desDec(string message, string key)
 //string input, hex key
 string ECB_E(string s, const string& key)
 {
-
     blockPadding(s);
     s = string2Hex(s);
     string tmp, ans = "";
@@ -151,14 +150,14 @@ string CTR_ED(string s, const string& key, string counter)
 //string input, hex key, string IV
 string CFB_E(string s, const string& key, const string& IV)
 {
-    int sBits = CFB_S; //multiples of 4
+    int sBits = CFB_S; //must be a multiple of 4
     string temp, Pn, Cn, ans = "";
     blockPadding(s);
     s = string2Hex(s);
     string shiftReg = IV;
 
     temp = desEnc(shiftReg, key);
-    Pn = s.substr(0, sBits / 4);
+    Pn = s.substr(0, sBits / 4); //each hex is 4 bits
     Cn = bin2Hex(xorS(hex2Bin(temp.substr(0, sBits / 4)), hex2Bin(Pn)));
     ans += Cn;
     for (int i = sBits / 4; i < s.size(); i += sBits / 4)

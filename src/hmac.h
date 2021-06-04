@@ -13,38 +13,38 @@
 
 using std::string;
 
-string hmac(const string &data, const string &_key)
+string hmac(const string &message, const string &_key)
 {
   SHA1 hasher;
   string key = hex2String(_key);
 
-  unsigned char bbitKey1[B_BYTES] = {0};
-  unsigned char bbitKey2[B_BYTES] = {0};
+  unsigned char Si[B_BYTES] = {0};
+  unsigned char S0[B_BYTES] = {0};
   if (key.size() <= B_BYTES)
   {
-    memcpy(bbitKey1, key.c_str(), key.size());
+    memcpy(Si, key.c_str(), key.size());
   }
   else
   {
     hasher.add(key.c_str(), key.size());
-    hasher.getHash(bbitKey1);
+    hasher.getHash(Si);
     hasher.reset();
   }
 
   for (int i = 0; i < B_BYTES; i++)
   {
-    bbitKey2[i] = bbitKey1[i] ^ OPAD;
-    bbitKey1[i] ^= IPAD;
+    S0[i] = Si[i] ^ OPAD;
+    Si[i] ^= IPAD;
   }
 
   unsigned char hashVal[SHA1_OUT_SIZE];
 
-  hasher.add(bbitKey1, B_BYTES);
-  hasher.add(data.c_str(), data.length());
+  hasher.add(Si, B_BYTES);
+  hasher.add(message.c_str(), message.length());
   hasher.getHash(hashVal);
 
   hasher.reset();
-  hasher.add(bbitKey2, B_BYTES);
+  hasher.add(S0, B_BYTES);
   hasher.add(hashVal, SHA1_OUT_SIZE);
 
   return hasher.getHash();

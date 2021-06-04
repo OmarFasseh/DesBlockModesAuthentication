@@ -63,7 +63,7 @@ int __cdecl main()
         stream << std::hex << x;
         counter += stream.str();
     }
-    int keySize = rand() % 64;
+    int keySize = rand() % 63 + 1; //make sure it has at least size of 1 
     for (int i = 0; i < keySize; i++)
     {
         x = rand() % 16;
