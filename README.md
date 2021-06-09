@@ -1,7 +1,11 @@
 # DesBlockModesAuthentication
 DES Block Modes with Authentication
 
+## Important note
+This was created using winsock2 so you'll need windows to run both the sender and receiver :/
 
+
+## How to run
 run the .exe if you don't need to compile
 
 or to compile and run
